@@ -1,0 +1,18 @@
+{
+  "index": {
+    "title": "Introduction"
+  },
+  "races": "Races",
+  "help": {
+    "title": "Help Documentation"
+  },
+  "DarkMUSH": "DarkMUSH Client",
+  "about": {
+    "title": "About"
+  },
+  "contact": {
+    "title": "Contact ↗",
+    "href": "https://github.com/Bochner",
+    "newWindow": true
+  }
+}
