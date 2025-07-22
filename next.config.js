@@ -7,4 +7,12 @@ const withNextra = require('nextra')({
   }
 })
 
-module.exports = withNextra()
+module.exports = withNextra({
+  output: 'export',
+  trailingSlash: true,
+  images: {
+    unoptimized: true
+  },
+  basePath: process.env.NODE_ENV === 'production' ? '/Dark-Wizardry-Wiki' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/Dark-Wizardry-Wiki/' : ''
+})
