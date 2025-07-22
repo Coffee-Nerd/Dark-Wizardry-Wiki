@@ -36,9 +36,13 @@ jobs:
     - name: Add .nojekyll file
       run: touch out/.nojekyll
       
+    - name: Copy CNAME file
+      run: cp public/CNAME out/CNAME
+      
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       if: github.ref == 'refs/heads/main'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./out
+        cname: wiki.darkwiz.org

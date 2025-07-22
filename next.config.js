@@ -13,6 +13,6 @@ module.exports = withNextra({
   images: {
     unoptimized: true
   },
-  basePath: process.env.NODE_ENV === 'production' ? '/Dark-Wizardry-Wiki' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/Dark-Wizardry-Wiki/' : ''
+  basePath: '',
+  assetPrefix: ''
 })
