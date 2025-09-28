@@ -12,7 +12,7 @@ This is a documentation site for Dark Wizardry MUD built with [Nextra](https://n
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Bochner/darkwiz-nextra.git
+git clone https://github.com/Coffee-Nerd/Dark-Wizardry-Wiki.git
 cd darkwiz-nextra
 ```
 

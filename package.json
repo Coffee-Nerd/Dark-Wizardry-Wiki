@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Bochner/darkwiz-nextra.git"
+    "url": "git+https://github.com/Coffee-Nerd/Dark-Wizardry-Wiki.git"
   },
-  "author": "Bochner",
+  "author": "Jeffrey Johnston",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Bochner/darkwiz-nextra/issues"
+    "url": "https://github.com/Coffee-Nerd/Dark-Wizardry-Wiki/issues"
   },
-  "homepage": "https://github.com/Bochner/darkwiz-nextra#readme",
+  "homepage": "https://github.com/Coffee-Nerd/Dark-Wizardry-Wiki#readme",
   "dependencies": {
     "next": "^13.0.6",
     "nextra": "^2.13.4",

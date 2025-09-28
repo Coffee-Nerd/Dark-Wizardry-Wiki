@@ -12,12 +12,12 @@ const config: DocsThemeConfig = {
     </>
   ),
   project: {
-    link: 'https://github.com/Bochner/darkwiz-nextra',
+    link: 'https://github.com/Coffee-Nerd/Dark-Wizardry-Wiki',
   },
   chat: {
     link: 'https://discord.gg/avDXd7PS',
   },
-  docsRepositoryBase: 'https://github.com/Bochner/darkwiz-nextra',
+  docsRepositoryBase: 'https://github.com/Coffee-Nerd/Dark-Wizardry-Wiki',
   feedback: {
     content: null
   },
