@@ -2,7 +2,9 @@
   "index": {
     "title": "Introduction"
   },
-  "races": "Races",
+  "builders": {
+    "title": "Builder Documentation"
+  },
   "help": {
     "title": "Help Documentation"
   },

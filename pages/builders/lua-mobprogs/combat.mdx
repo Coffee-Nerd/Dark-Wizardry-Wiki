@@ -1,0 +1,217 @@
+# Combat Functions
+
+## attack(victim)
+
+Make the mob attack a character.
+
+**Arguments:**
+- `victim` (character): The character to attack
+
+**Returns:**
+- `boolean`: `true` if attack initiated, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and is_evil(actor) then
+    say("Evil shall not pass!")
+    attack(actor)
+end
+```
+
+## damage(target, amount [, custom_message] [, elemental_type] [, nocombat])
+
+Deal damage to a character with advanced options.
+
+**Arguments:**
+- `target` (character): The character to damage
+- `amount` (number): Base damage amount
+- `custom_message` (string, optional): Custom damage message
+- `elemental_type` (number, optional): Elemental damage type (0-18, see table below)
+- `nocombat` (boolean, optional): If true, damage doesn't start combat
+
+**Elemental Damage Types:**
+- `0`: DAM_NORM (Normal damage - default)
+- `1`: DAM_LIGHTNING (Lightning damage)
+- `2`: DAM_COLD (Cold damage)
+- `3`: DAM_ACID (Acid damage)
+- `4`: DAM_MAGIC (Magic damage)
+- `5`: DAM_POISON (Poison damage)
+- `6`: DAM_DRAINING (Life draining damage)
+- `7`: DAM_DARK (Dark/shadow damage)
+- `8`: DAM_WIND (Wind damage)
+- `9`: DAM_WATER (Water damage)
+- `10`: DAM_ENERGY (Energy damage)
+- `11`: DAM_LIGHT (Light/holy damage)
+- `12`: DAM_MANA_DRAIN (Mana draining damage)
+- `13`: DAM_WOOD (Wood damage)
+- `14`: DAM_EARTH (Earth damage)
+- `15`: DAM_TOXIC (Toxic damage)
+- `16`: DAM_NONORM (Ethereal damage)
+- `17`: DAM_SILVER (Silver damage)
+- `18`: DAM_FIRE (Fire damage)
+
+**Returns:**
+- `boolean`: `true` if damage dealt, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    -- Basic damage
+    damage(actor, 50)
+
+    -- Fire damage with custom message
+    damage(actor, 100, "The sage's fire burns you!", 18)
+
+    -- Lightning damage that doesn't start combat
+    damage(actor, 25, "Lightning crackles around you!", 1, true)
+end
+```
+
+## heal(target, amount)
+
+Heal a character for specified amount.
+
+**Arguments:**
+- `target` (character): The character to heal
+- `amount` (number): Amount of HP to restore
+
+**Returns:**
+- `boolean`: `true` if healing successful, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and get_hp_percent(actor) < 50 then
+    say("Let me heal your wounds.")
+    heal(actor, 200)
+    say("There, you should feel better now.")
+end
+```
+
+## peace_room()
+
+Stop all fighting in the current room.
+
+**Arguments:** None
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+say("ENOUGH! There will be no fighting here!")
+peace_room()
+wait(1)
+say("Now, let's discuss this peacefully.")
+```
+
+## Area-of-Effect Combat Functions
+
+### damage_room(amount [, message] [, elemental_type] [, target_type])
+
+Deal area-of-effect damage to multiple targets in the room with intelligent targeting.
+
+**Arguments:**
+- `amount` (number): Base damage amount
+- `message` (string, optional): Custom damage message
+- `elemental_type` (number, optional): Elemental damage type (0-18)
+- `target_type` (string, optional): Target filter (default: "all")
+
+**Target Type Options:**
+- `"all"`: Target everyone in room
+- `"players"`: Target only player characters
+- `"npcs"`: Target only NPCs
+- `"enemies"`: Target only characters fighting the mob or its allies
+- `"good"`: Target only good-aligned characters
+- `"evil"`: Target only evil-aligned characters
+- `"neutral"`: Target only neutral-aligned characters
+
+**Returns:**
+- `number`: Number of targets actually hit
+
+**Examples:**
+```lua
+-- Basic room-wide explosion
+local targets_hit = damage_room(100, "The room explodes in flames!")
+say("My explosion hit " .. targets_hit .. " targets!")
+
+-- Target only enemies with fire damage
+local enemies_hit = damage_room(150, "Fire engulfs my enemies!", 18, "enemies")
+if enemies_hit > 0 then
+    say("Burn, my foes!")
+else
+    say("No enemies to burn...")
+end
+
+-- Target only evil characters with holy damage
+damage_room(200, "Holy light burns the wicked!", 11, "evil")
+
+-- Target only players (dangerous!)
+damage_room(50, "You shouldn't be here!", 0, "players")
+
+-- Target NPCs only (useful for mob vs mob combat)
+damage_room(300, "NPCs fight each other!", 0, "npcs")
+```
+
+**Advanced Combat Example:**
+```lua
+-- Dragon breath attack - targets enemies and evil characters
+local actor = get_actor()
+if actor then
+    if is_evil(actor) then
+        say("Your evil presence angers me!")
+        wait(1)
+        emo("The dragon inhales deeply...")
+        wait(2)
+        yell("BURN IN DRAGON FIRE!")
+
+        local evil_hit = damage_room(400, "Dragon fire incinerates you!", 18, "evil")
+        local enemy_hit = damage_room(300, "The dragon's rage burns you!", 18, "enemies")
+
+        echo_area("A terrible roar echoes from the dragon's lair!")
+
+    else
+        say("Your pure heart protects you from my wrath.")
+    end
+end
+```
+
+**Smart Healing Example:**
+```lua
+-- Heal all group members who are injured
+local mob = get_mob_context()
+local characters = get_room_characters()
+
+say("Let me tend to the wounded...")
+
+for i, char in ipairs(characters) do
+    if is_group_member(mob, char) and get_hp_percent(char) < 75 then
+        heal(char, 200)
+        tell(char, "Your wounds are healed!")
+    end
+end
+```
+
+**Selective Targeting Example:**
+```lua
+-- Only attack enemies, spare innocents
+local mob = get_mob_context()
+local room_chars = get_room_characters()
+local enemies_found = false
+
+for i, char in ipairs(room_chars) do
+    if is_enemy(mob, char) then
+        enemies_found = true
+        break
+    end
+end
+
+if enemies_found then
+    say("I sense hostility... defend yourselves!")
+    damage_room(250, "Lightning strikes my foes!", 1, "enemies")
+else
+    say("I sense no threats here. Peace be with you all.")
+end
+```

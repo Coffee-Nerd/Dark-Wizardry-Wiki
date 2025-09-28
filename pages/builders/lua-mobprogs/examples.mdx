@@ -1,0 +1,252 @@
+# Examples and Best Practices
+
+## Complete Quest NPC Example
+
+```lua
+-- Quest Giver: Village Elder
+local actor = get_actor()
+if not actor or not is_pc(actor) then
+    return
+end
+
+local quest_stage = quest_flag(actor, "goblin_extermination")
+
+if quest_stage == 0 then
+    -- Quest not started
+    say("Greetings, " .. get_name(actor) .. ".")
+    wait(1)
+    say("Our village is plagued by goblins to the east.")
+    wait(2)
+    say("Would you be willing to help us?")
+    wait(1)
+
+    if get_level(actor) >= 10 then
+        say("You look capable enough for this task.")
+        set_quest_flag(actor, "goblin_extermination", 1)
+        reward(actor, "gold", 100) -- Advance payment
+        say("Slay 10 goblins and return to me.")
+    else
+        say("I'm sorry, but you're not experienced enough yet.")
+        say("Come back when you're at least level 10.")
+    end
+
+elseif quest_stage == 1 then
+    -- Quest in progress - check if completed
+    -- This would normally be set by a death_prog on goblins
+    local goblins_killed = quest_flag(actor, "goblins_killed")
+
+    if goblins_killed >= 10 then
+        say("Excellent work! You've saved our village!")
+        reward(actor, "xp", 2000)
+        reward(actor, "gold", 500)
+        reward(actor, "item", 1008, "15") -- Special sword level 15
+        set_quest_flag(actor, "goblin_extermination", -1) -- Complete
+        set_quest_flag(actor, "goblins_killed", 0) -- Clean up counter
+    else
+        say("Have you killed all 10 goblins yet?")
+        say("You've killed " .. goblins_killed .. " so far.")
+    end
+
+elseif quest_stage == -1 then
+    -- Quest completed
+    say("Thank you again for saving our village!")
+    if percent_chance(10) then
+        say("Oh, I found this while cleaning up.")
+        create_and_give(actor, 1009) -- Rare bonus item
+    end
+else
+    -- Quest failed or other state
+    say("Perhaps another time...")
+end
+```
+
+## Combat Assistant Example
+
+```lua
+-- Healer mob that helps during combat
+local mob = get_mob_context()
+if not mob or not mob.in_room then
+    return
+end
+
+-- Check for wounded players in room
+local wounded_found = false
+for i, character in ipairs(mob.in_room.people) do -- Note: This is pseudocode
+    -- In actual implementation, you'd need to iterate properly
+    if character and is_pc(character) and not is_fighting(character) then
+        local hp_pct = get_hp_percent(character)
+        if hp_pct < 50 then
+            wounded_found = true
+            say("Your wounds look severe, " .. get_name(character) .. "!")
+            heal(character, 200)
+            wait(1)
+            say("There, that should help.")
+            break
+        end
+    end
+end
+
+if not wounded_found then
+    -- Look for ongoing combat to assist
+    for i, character in ipairs(mob.in_room.people) do -- Note: pseudocode
+        if character and is_pc(character) and is_fighting(character) then
+            local enemy = get_fighting(character)
+            if enemy and is_npc(enemy) then
+                say("I'll help you fight!")
+                attack(enemy)
+                break
+            end
+        end
+    end
+end
+```
+
+## Shopkeeper Example
+
+```lua
+-- Advanced shopkeeper with dynamic pricing
+local actor = get_actor()
+if not actor or not is_pc(actor) then
+    return
+end
+
+local actor_level = get_level(actor)
+local actor_gold = get_gold(actor)
+
+say("Welcome to my shop, " .. get_name(actor) .. "!")
+wait(1)
+
+-- Offer different items based on level
+if actor_level < 10 then
+    say("You're new to adventuring. Let me offer you some basic gear.")
+
+    if actor_gold >= 100 then
+        say("I have a sturdy sword for 100 gold.")
+        if has_object_vnum(actor, 1010) then
+            say("Oh wait, you already have one!")
+        else
+            say("Would you like to buy it? Say 'yes' to purchase.")
+            -- In a full implementation, you'd wait for response
+            wait(2)
+            if percent_chance(70) then -- Simulate purchase
+                create_and_give(actor, 1010)
+                set_char_stat(actor, "gold", actor_gold - 100)
+                say("Pleasure doing business with you!")
+            end
+        end
+    else
+        say("I'm afraid you don't have enough gold for my weapons.")
+        say("Come back when you have at least 100 gold.")
+    end
+
+elseif actor_level < 30 then
+    say("Ah, an experienced adventurer! I have better equipment for you.")
+    -- Offer mid-level gear
+
+else
+    say("A veteran warrior! Let me show you my finest wares.")
+    -- Offer high-level gear
+end
+```
+
+## Dynamic Event Manager
+
+```lua
+-- Event coordinator that manages world events
+local mob = get_mob_context()
+if not mob then
+    return
+end
+
+-- Check time-based events (this would need integration with MUD time)
+local current_hour = 12 -- Placeholder - would get from MUD time system
+
+if current_hour == 12 then -- Noon event
+    echo_area("The noon bell tolls across the land!")
+    wait(2)
+    echo_area("Shops are now offering midday specials!")
+
+elseif current_hour == 0 then -- Midnight event
+    echo_area("The witching hour approaches...")
+    wait(3)
+
+    -- Spawn special midnight creatures
+    if percent_chance(30) then
+        if is_alive(9999) then -- Check if boss is already spawned
+            echo_area("The shadow lord still haunts the night...")
+        else
+            echo_area("A dark presence manifests!")
+            goto_room(9998) -- Go to spawn location
+            wait(1)
+            -- Would need mob loading function
+            echo_at(9998, "The shadow lord materializes from the darkness!")
+            echo_area("The shadow lord has appeared! Brave heroes are needed!")
+        end
+    end
+end
+```
+
+## Best Practices
+
+### 1. Always check for nil values:
+```lua
+local actor = get_actor()
+if actor then
+    -- Safe to use actor
+end
+```
+
+### 2. Use descriptive variable names:
+```lua
+local quest_stage = quest_flag(actor, "dragon_quest")
+local player_level = get_level(actor)
+```
+
+### 3. Provide meaningful feedback:
+```lua
+if create_and_give(actor, 1001) then
+    say("I've given you a magic sword!")
+else
+    say("I'm sorry, I couldn't create that item.")
+end
+```
+
+### 4. Use wait() for dramatic effect:
+```lua
+say("Let me think about this...")
+wait(2)
+say("Ah yes, I remember now!")
+```
+
+### 5. Check prerequisites before actions:
+```lua
+if get_level(actor) >= 20 and not has_object_vnum(actor, 1001) then
+    -- Give special item
+end
+```
+
+### 6. Handle different character types:
+```lua
+if is_pc(actor) then
+    -- Player-specific logic
+elseif is_npc(actor) then
+    -- NPC-specific logic
+end
+```
+
+### 7. Use quest flags for complex state tracking:
+```lua
+local progress = quest_flag(actor, "complex_quest_progress")
+-- Use different values for different states
+-- 0 = not started, 1-10 = various stages, -1 = completed, -2 = failed
+```
+
+### 8. Clean up resources when done:
+```lua
+-- Remove temporary quest items
+if has_object_vnum(actor, 9999) then -- Temporary quest item
+    -- Remove it when quest is complete
+end
+```
+
+This comprehensive documentation covers every function available in the DarkWizardry Lua MOBprog system. Each function includes detailed argument specifications, return values, and practical examples to help builders create engaging and dynamic NPCs.

@@ -1,0 +1,174 @@
+# Core Concepts
+
+## Variable Types
+
+- **Characters**: Passed as userdata, test with `actor ~= nil`
+- **Objects**: Passed as userdata, test with `obj ~= nil`
+- **Numbers**: Standard Lua integers
+- **Strings**: Standard Lua strings
+- **Booleans**: `true`/`false`
+
+## Context Variables
+
+Every Lua mobprog execution has access to these context variables:
+
+- `actor` - The character who triggered the mobprog ($n equivalent)
+- `mob` - The mob executing the program ($i equivalent)
+- `obj` - Object involved in the trigger ($o equivalent)
+- `victim` - Target character ($t equivalent)
+- `random` - Random player in room ($r equivalent)
+
+## Error Handling
+
+Lua mobprogs are fully crash-protected:
+- Syntax errors are caught at compile time
+- Runtime errors disable the mob temporarily
+- Infinite loops are prevented with instruction limits
+- Memory usage is capped
+
+## Wait and Timing Functions
+
+### wait(seconds)
+
+Wait for a specified number of seconds. **This is the key function that makes Lua mobprogs superior!**
+
+**Arguments:**
+- `seconds` (number): Number of seconds to wait (can be 0)
+
+**Returns:** Nothing (yields execution)
+
+**Example:**
+```lua
+say("I need to think about this...")
+wait(3)
+say("Ah yes, I remember now!")
+
+-- Works inside control structures!
+for i = 1, 3 do
+    say("Counting: " .. i)
+    wait(1)
+end
+```
+
+### wait_minutes(minutes)
+
+Wait for a specified number of minutes.
+
+**Arguments:**
+- `minutes` (number): Number of minutes to wait
+
+**Returns:** Nothing (yields execution)
+
+**Example:**
+```lua
+say("I'll be back in a few minutes.")
+wait_minutes(5)
+say("I'm back!")
+```
+
+### wait_ticks(ticks)
+
+Wait for a specified number of game ticks.
+
+**Arguments:**
+- `ticks` (number): Number of game ticks to wait
+
+**Returns:** Nothing (yields execution)
+
+**Example:**
+```lua
+say("Just a moment...")
+wait_ticks(10)
+say("Ready!")
+```
+
+## Context Variable Functions
+
+These functions provide access to the traditional mobprog variables ($n, $i, $o, $t, $r).
+
+### get_actor()
+
+Get the character who triggered the mobprog ($n equivalent).
+
+**Arguments:** None
+
+**Returns:**
+- `character`: The triggering character, or `nil` if none
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    say("Hello, " .. get_name(actor) .. "!")
+end
+```
+
+### get_mob_context()
+
+Get the mob executing the program ($i equivalent).
+
+**Arguments:** None
+
+**Returns:**
+- `character`: The executing mob, or `nil` if error
+
+**Example:**
+```lua
+local mob = get_mob_context()
+if mob then
+    local room = get_room(mob)
+    log_message("Mob in room " .. room .. " executed script")
+end
+```
+
+### get_object()
+
+Get the object from the trigger context ($o equivalent).
+
+**Arguments:** None
+
+**Returns:**
+- `object`: The object involved in the trigger, or `nil` if none
+
+**Example:**
+```lua
+local obj = get_object()
+if obj then
+    local vnum = get_obj_vnum(obj)
+    say("Ah, you have object " .. vnum .. "!")
+end
+```
+
+### get_victim()
+
+Get the victim/target from the trigger context ($t equivalent).
+
+**Arguments:** None
+
+**Returns:**
+- `character`: The victim/target character, or `nil` if none
+
+**Example:**
+```lua
+local victim = get_victim()
+if victim then
+    say("So you want to attack " .. get_name(victim) .. "?")
+end
+```
+
+### get_random()
+
+Get a random player character from the room ($r equivalent).
+
+**Arguments:** None
+
+**Returns:**
+- `character`: A random player in the room, or `nil` if none
+
+**Example:**
+```lua
+local random_player = get_random()
+if random_player then
+    tell(random_player, "You've been chosen at random!")
+end
+```

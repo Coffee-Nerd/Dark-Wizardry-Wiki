@@ -1,0 +1,423 @@
+# Object Functions
+
+## create_object(vnum)
+
+Create an object by vnum.
+
+**Arguments:**
+- `vnum` (number): Virtual number of the object to create
+
+**Returns:**
+- `object`: The created object, or `nil` if failed
+
+**Example:**
+```lua
+local sword = create_object(1001)
+if sword then
+    -- Object was created successfully
+    give_object(get_actor(), sword)
+end
+```
+
+## give_object(character, object)
+
+Give an object to a character.
+
+**Arguments:**
+- `character` (character): The character to receive the object
+- `object` (object): The object to give
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+local potion = create_object(1002)
+if actor and potion then
+    give_object(actor, potion)
+    say("Here, take this potion.")
+end
+```
+
+## create_and_give(character, vnum)
+
+Convenience function to create an object and give it to a character.
+
+**Arguments:**
+- `character` (character): The character to receive the object
+- `vnum` (number): Virtual number of the object to create
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    if create_and_give(actor, 1001) then
+        say("I've given you a special sword!")
+    else
+        say("I'm sorry, I couldn't create that item.")
+    end
+end
+```
+
+## remove_object(object)
+
+Remove an object from the game.
+
+**Arguments:**
+- `object` (object): The object to remove
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local obj = get_object() -- From trigger context
+if obj then
+    say("This cursed item must be destroyed!")
+    remove_object(obj)
+end
+```
+
+## has_object(character, name)
+
+Check if a character has an object with a specific name.
+
+**Arguments:**
+- `character` (character): The character to check
+- `name` (string): Name/keyword of the object to look for
+
+**Returns:**
+- `boolean`: `true` if character has the object, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    if has_object(actor, "magic sword") then
+        say("I see you have the magic sword!")
+    else
+        say("You need to find the magic sword first.")
+    end
+end
+```
+
+## has_object_vnum(character, vnum)
+
+Check if a character has an object with a specific vnum.
+
+**Arguments:**
+- `character` (character): The character to check
+- `vnum` (number): Virtual number of the object to look for
+
+**Returns:**
+- `boolean`: `true` if character has the object, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    if has_object_vnum(actor, 1001) then
+        say("You already have that special sword.")
+    else
+        create_and_give(actor, 1001)
+        say("Here's a special sword for you!")
+    end
+end
+```
+
+## get_object_level(object)
+
+Get an object's level.
+
+**Arguments:**
+- `object` (object): The object to check
+
+**Returns:**
+- `number`: Object's level (0 if invalid)
+
+**Example:**
+```lua
+local obj = get_object()
+if obj then
+    local level = get_object_level(obj)
+    say("This object is level " .. level .. ".")
+end
+```
+
+## load_obj(vnum [, level])
+
+Load an object into the mob's inventory.
+
+**Arguments:**
+- `vnum` (number): Virtual number of the object to load
+- `level` (number, optional): Level of the object (default: mob's level)
+
+**Returns:**
+- `object`: The loaded object, or `nil` if failed
+
+**Example:**
+```lua
+local treasure = load_obj(1003, 25)
+if treasure then
+    say("I found something interesting!")
+end
+```
+
+## load_mob(vnum [, room_vnum])
+
+Load a mob by virtual number. Equivalent to traditional `mpmload`.
+
+**Arguments:**
+- `vnum` (number): Virtual number of the mob to load
+- `room_vnum` (number, optional): Room to load the mob into (default: current room)
+
+**Returns:**
+- `character`: The loaded mob, or `nil` if failed
+
+**Example:**
+```lua
+-- Load a guard in the current room
+local guard = load_mob(1234)
+if guard then
+    say("I've summoned a guard to help!")
+    tell(guard, "Protect this area!")
+end
+
+-- Load a messenger in a specific room
+local messenger = load_mob(5678, 9999)
+if messenger then
+    say("I've sent a messenger to the castle!")
+end
+```
+
+## junk(object)
+
+Remove an object from the game (equivalent to junking it).
+
+**Arguments:**
+- `object` (object): The object to junk
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local obj = get_object()
+if obj then
+    say("This trash needs to be disposed of.")
+    junk(obj)
+end
+```
+
+## set_obj_value(object, index, value)
+
+Set an object's value field.
+
+**Arguments:**
+- `object` (object): The object to modify
+- `index` (number): Value index (0-3)
+- `value` (number): New value to set
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local weapon = load_obj(1004)
+if weapon then
+    -- Set weapon damage (usually value[1] for weapons)
+    set_obj_value(weapon, 1, 50)
+    say("I've enhanced this weapon's power!")
+end
+```
+
+## equip(character, object, wear_location)
+
+Equip an object on a character.
+
+**Arguments:**
+- `character` (character): The character to equip
+- `object` (object): The object to equip
+- `wear_location` (number): Where to wear it (see wear locations below)
+
+**Wear Locations:**
+- `0`: WEAR_NONE
+- `1`: WEAR_LIGHT
+- `2`: WEAR_FINGER_L
+- `3`: WEAR_FINGER_R
+- `4`: WEAR_NECK_1
+- `5`: WEAR_NECK_2
+- `6`: WEAR_BODY
+- `7`: WEAR_HEAD
+- `8`: WEAR_LEGS
+- `9`: WEAR_FEET
+- `10`: WEAR_HANDS
+- `11`: WEAR_ARMS
+- `12`: WEAR_SHIELD
+- `13`: WEAR_ABOUT
+- `14`: WEAR_WAIST
+- `15`: WEAR_WRIST_L
+- `16`: WEAR_WRIST_R
+- `17`: WEAR_WIELD
+- `18`: WEAR_HOLD
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+local sword = create_object(1005)
+if actor and sword then
+    equip(actor, sword, 17) -- WEAR_WIELD
+    say("The sword fits perfectly in your hand!")
+end
+```
+
+## unequip(character, wear_location)
+
+Remove an item from a specific wear location.
+
+**Arguments:**
+- `character` (character): The character to unequip from
+- `wear_location` (number): Wear location to remove item from
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    unequip(actor, 17) -- Remove wielded weapon
+    say("Your weapon falls to the ground!")
+end
+```
+
+## Object Property Functions
+
+### get_obj_type(object)
+
+Get an object's item type.
+
+**Arguments:**
+- `object` (object): The object to check
+
+**Returns:**
+- `number`: Item type value
+
+**Common Item Types:**
+- `1`: ITEM_LIGHT
+- `2`: ITEM_SCROLL
+- `3`: ITEM_WAND
+- `4`: ITEM_STAFF
+- `5`: ITEM_WEAPON
+- `8`: ITEM_TREASURE
+- `9`: ITEM_ARMOR
+- `10`: ITEM_POTION
+- `11`: ITEM_CLOTHING
+- `12`: ITEM_FURNITURE
+- `15`: ITEM_CONTAINER
+- `17`: ITEM_DRINK_CON
+- `18`: ITEM_KEY
+- `19`: ITEM_FOOD
+
+**Example:**
+```lua
+local obj = get_object()
+if obj then
+    local type = get_obj_type(obj)
+    if type == 5 then -- ITEM_WEAPON
+        say("That's a fine weapon you have there!")
+    elseif type == 9 then -- ITEM_ARMOR
+        say("Good armor will protect you well.")
+    end
+end
+```
+
+### get_obj_cost(object)
+
+Get an object's cost value.
+
+**Arguments:**
+- `object` (object): The object to check
+
+**Returns:**
+- `number`: Cost value (0 if invalid)
+
+**Example:**
+```lua
+local obj = get_object()
+if obj then
+    local cost = get_obj_cost(obj)
+    if cost > 1000 then
+        say("That's a very expensive item!")
+    end
+end
+```
+
+### get_obj_value(object, index)
+
+Get one of an object's value fields (0-3).
+
+**Arguments:**
+- `object` (object): The object to check
+- `index` (number): Value index (0-3)
+
+**Returns:**
+- `number`: Value at the specified index (0 if invalid)
+
+**Value Meanings by Item Type:**
+- **Weapons (type 5):**
+  - value[0]: Weapon class
+  - value[1]: Number of damage dice
+  - value[2]: Type of damage dice
+  - value[3]: Attack type
+- **Armor (type 9):**
+  - value[0]: AC pierce
+  - value[1]: AC bash
+  - value[2]: AC slash
+  - value[3]: AC exotic
+- **Containers (type 15):**
+  - value[0]: Capacity
+  - value[1]: Container flags
+  - value[2]: Key vnum
+  - value[3]: Max weight
+
+**Example:**
+```lua
+local obj = get_object()
+if obj then
+    local type = get_obj_type(obj)
+    if type == 5 then -- Weapon
+        local damage_dice = get_obj_value(obj, 1)
+        local dice_type = get_obj_value(obj, 2)
+        say("This weapon does " .. damage_dice .. "d" .. dice_type .. " damage!")
+    end
+end
+```
+
+### get_obj_vnum(object)
+
+Get an object's virtual number.
+
+**Arguments:**
+- `object` (object): The object to check
+
+**Returns:**
+- `number`: Virtual number (0 if invalid)
+
+**Example:**
+```lua
+local obj = get_object()
+if obj then
+    local vnum = get_obj_vnum(obj)
+    if vnum == 1001 then
+        say("Ah, the legendary sword!")
+    end
+end
+```

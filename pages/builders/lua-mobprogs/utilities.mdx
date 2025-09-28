@@ -1,0 +1,174 @@
+# Utility Functions
+
+## random(max)
+
+Generate a random number from 1 to max.
+
+**Arguments:**
+- `max` (number): Maximum value (minimum is always 1)
+
+**Returns:**
+- `number`: Random number from 1 to max (0 if max <= 0)
+
+**Example:**
+```lua
+local roll = random(100)
+if roll <= 10 then
+    say("Extremely rare event!")
+elseif roll <= 50 then
+    say("Uncommon event.")
+else
+    say("Common event.")
+end
+```
+
+## percent_chance(percent)
+
+Check if a random percentage occurs.
+
+**Arguments:**
+- `percent` (number): Percentage chance (0-100)
+
+**Returns:**
+- `boolean`: `true` if the percentage occurred, `false` otherwise
+
+**Example:**
+```lua
+if percent_chance(25) then
+    say("You got lucky! 25% chance event occurred.")
+    create_and_give(get_actor(), 1006) -- Rare item
+else
+    say("Better luck next time.")
+end
+```
+
+## log_message(message)
+
+Log a message to the server log file.
+
+**Arguments:**
+- `message` (string): Message to log
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    log_message("Player " .. get_name(actor) .. " triggered special event")
+end
+```
+
+## send_notify(message)
+
+Send a notification to immortals.
+
+**Arguments:**
+- `message` (string): Notification message
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and get_level(actor) > 50 then
+    send_notify("High level player " .. get_name(actor) .. " found secret area")
+end
+```
+
+## is_alive(vnum)
+
+Check if any mob with the specified vnum exists in the world.
+
+**Arguments:**
+- `vnum` (number): Virtual number of the mob to check for
+
+**Returns:**
+- `boolean`: `true` if a mob with that vnum exists, `false` otherwise
+
+**Example:**
+```lua
+if is_alive(1007) then
+    say("The dragon lord still lives! You must defeat him first.")
+else
+    say("The dragon lord is dead. You have succeeded!")
+    -- Give special rewards
+end
+```
+
+## Group and Enemy Detection Functions
+
+### is_group_member(char1, char2)
+
+Check if two characters are in the same group.
+
+**Arguments:**
+- `char1` (character): First character
+- `char2` (character): Second character
+
+**Returns:**
+- `boolean`: `true` if they're in the same group, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+local players = get_room_players()
+
+for i, player in ipairs(players) do
+    if is_group_member(actor, player) then
+        say(get_name(player) .. " is in " .. get_name(actor) .. "'s group!")
+    end
+end
+```
+
+### get_group_members(character)
+
+Get all members of a character's group.
+
+**Arguments:**
+- `character` (character): Character whose group to check
+
+**Returns:**
+- `table`: Array of group member references (includes leader)
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local group = get_group_members(actor)
+    if #group > 1 then
+        say("Your group has " .. #group .. " members.")
+        for i, member in ipairs(group) do
+            tell(member, "Group quest available!")
+        end
+    else
+        say("You're traveling alone.")
+    end
+end
+```
+
+### is_enemy(char1, char2)
+
+Check if char1 considers char2 an enemy based on fighting status, alignment, and group membership.
+
+**Arguments:**
+- `char1` (character): Character doing the checking
+- `char2` (character): Potential enemy
+
+**Returns:**
+- `boolean`: `true` if char1 considers char2 an enemy, `false` otherwise
+
+**Example:**
+```lua
+local mob = get_mob_context()
+local players = get_room_players()
+
+for i, player in ipairs(players) do
+    if is_enemy(mob, player) then
+        say("You are my enemy, " .. get_name(player) .. "!")
+        attack(player)
+    else
+        say("Peace be with you, " .. get_name(player) .. ".")
+    end
+end
+```

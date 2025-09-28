@@ -1,0 +1,192 @@
+# Quest System Functions
+
+## quest_flag(character, flag_name)
+
+Get the value of a quest flag for a character.
+
+**Arguments:**
+- `character` (character): The character to check
+- `flag_name` (string): Name of the quest flag
+
+**Returns:**
+- `number`: Current stage/value of the quest flag (0 if not set)
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local stage = quest_flag(actor, "village_rescue")
+    if stage == 0 then
+        say("I have a quest for you...")
+        set_quest_flag(actor, "village_rescue", 1)
+    elseif stage == 1 then
+        say("Have you rescued the villagers yet?")
+    elseif stage == 2 then
+        say("Excellent! You've completed the rescue!")
+        reward(actor, "xp", 1000)
+        set_quest_flag(actor, "village_rescue", -1) -- Mark complete
+    end
+end
+```
+
+## set_quest_flag(character, flag_name, value)
+
+Set the value of a quest flag for a character.
+
+**Arguments:**
+- `character` (character): The character to set the flag for
+- `flag_name` (string): Name of the quest flag
+- `value` (number): New value/stage to set
+
+**Quest Flag Values:**
+- `0`: Quest not started (deletes the flag)
+- `1+`: Quest stages (positive numbers)
+- `-1`: Quest completed successfully
+- `-2`: Quest failed
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    -- Start a new quest
+    set_quest_flag(actor, "dragon_slayer", 1)
+    say("Your quest to slay the dragon begins!")
+
+    -- Later, when dragon is killed
+    -- set_quest_flag(actor, "dragon_slayer", -1)
+end
+```
+
+## Character Manipulation Functions
+
+### force(character, command)
+
+Force a character to execute a command.
+
+**Arguments:**
+- `character` (character): The character to force
+- `command` (string): Command to force them to execute
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and is_evil(actor) then
+    say("Begone, evil one!")
+    force(actor, "flee")
+end
+```
+
+### purge([target])
+
+Remove characters or objects from the game.
+
+**Arguments:**
+- `target` (character/object, optional): Specific target to purge, or no argument to purge all NPCs and objects in room
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+-- Purge all NPCs and objects in room
+say("Clearing the area!")
+purge()
+
+-- Or purge a specific character
+local evil_mob = -- ... get reference to mob
+if evil_mob then
+    purge(evil_mob)
+end
+```
+
+### set_char_stat(character, stat_name, value)
+
+Set a character's statistic.
+
+**Arguments:**
+- `character` (character): The character to modify
+- `stat_name` (string): Name of the stat to change
+- `value` (number): New value for the stat
+
+**Valid Stat Names:**
+- `"str"` or `"strength"`: Strength (3-35, PCs only)
+- `"int"` or `"intelligence"`: Intelligence (3-35, PCs only)
+- `"wis"` or `"wisdom"`: Wisdom (3-35, PCs only)
+- `"dex"` or `"dexterity"`: Dexterity (3-35, PCs only)
+- `"con"` or `"constitution"`: Constitution (3-35, PCs only)
+- `"sex"` or `"gender"`: Gender (0=neutral, 1=male, 2=female)
+- `"level"`: Character level (1-MAX_LEVEL)
+- `"gold"`: Gold amount (0+)
+- `"hp"` or `"hitpoints"`: Current HP
+- `"maxhp"` or `"max_hitpoints"`: Maximum HP
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and not is_npc(actor) then
+    -- Reward with permanent stat boost
+    local current_str = -- would need to implement get_stat function
+    set_char_stat(actor, "strength", 18)
+    say("You feel stronger!")
+end
+```
+
+## Reward Functions
+
+### reward(target, type, amount [, extra])
+
+Give various types of rewards to a character.
+
+**Arguments:**
+- `target` (character): The character to reward
+- `type` (string): Type of reward (see types below)
+- `amount` (number): Amount or multiplier
+- `extra` (string, optional): Extra parameter for some reward types
+
+**Reward Types:**
+- `"xp"` or `"XP"`: Experience points
+- `"xpcap"` or `"XPCAP"`: Experience based on XP cap multiplier
+- `"gold"` or `"GOLD"`: Gold coins
+- `"qpoints"`: Quest points
+- `"practice"`: Practice sessions
+- `"perm_practice"`: Permanent practice sessions
+- `"item"`: Create item (amount=vnum, extra=level)
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Examples:**
+```lua
+local actor = get_actor()
+if actor then
+    -- Give experience points
+    reward(actor, "xp", 1000)
+
+    -- Give XP based on cap (2x their normal cap)
+    reward(actor, "xpcap", 2)
+
+    -- Give gold
+    reward(actor, "gold", 500)
+
+    -- Give quest points
+    reward(actor, "qpoints", 10)
+
+    -- Give practice sessions
+    reward(actor, "practice", 5)
+
+    -- Give permanent practice sessions
+    reward(actor, "perm_practice", 1)
+
+    -- Give item (vnum 1007 at level 25)
+    reward(actor, "item", 1007, "25")
+end
+```

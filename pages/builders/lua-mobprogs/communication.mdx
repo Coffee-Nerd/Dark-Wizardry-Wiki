@@ -1,0 +1,255 @@
+# Communication Functions
+
+## say(message)
+
+Make the mob say something to everyone in the room.
+
+**Arguments:**
+- `message` (string): The message to say
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+say("Hello, adventurer!")
+say("The weather is quite nice today.")
+```
+
+## tell(target, message)
+
+Make the mob tell something privately to a specific character.
+
+**Arguments:**
+- `target` (character): The character to tell
+- `message` (string): The message to tell
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    tell(actor, "I have a secret quest for you.")
+end
+```
+
+## emo(action)
+
+Make the mob perform an emote (third-person action).
+
+**Arguments:**
+- `action` (string): The action to perform (should include the mob's name)
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+emo("The sage nods thoughtfully.")
+emo("The sage strokes his long beard.")
+```
+
+## yell(message)
+
+Make the mob yell something to the entire area.
+
+**Arguments:**
+- `message` (string): The message to yell
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+yell("Help! Raiders are attacking the village!")
+```
+
+## gtell(target, message)
+
+Send a group tell to a character's group.
+
+**Arguments:**
+- `target` (character): A member of the group to send to
+- `message` (string): The message to send
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    gtell(actor, "Your group has completed the quest!")
+end
+```
+
+## gossip(message)
+
+Make the mob send a gossip message to all players.
+
+**Arguments:**
+- `message` (string): The message to gossip
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+gossip("The sage has appeared in the village!")
+```
+
+## Echo and Area Functions
+
+### echo_around(character, message)
+
+Echo a message to everyone in the room except the specified character.
+
+**Arguments:**
+- `character` (character): The character to exclude from the echo
+- `message` (string): The message to echo
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    echo_around(actor, "The sage whispers something to " .. get_name(actor) .. ".")
+    tell(actor, "This is our secret.")
+end
+```
+
+### echo_area(message)
+
+Echo a message to the entire area except the current room.
+
+**Arguments:**
+- `message` (string): The message to echo
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+echo_area("A thunderous roar echoes from the dragon's lair!")
+wait(2)
+say("Did you hear that? The dragon stirs...")
+```
+
+### echo_adjacent(message)
+
+Echo a message to all rooms adjacent to the current room.
+
+**Arguments:**
+- `message` (string): The message to echo
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+echo_adjacent("You hear the sound of chanting from nearby.")
+say("My ritual begins...")
+```
+
+### echo_at(room_vnum, message)
+
+Echo a message to a specific room.
+
+**Arguments:**
+- `room_vnum` (number): Virtual number of the room to echo to
+- `message` (string): The message to echo
+
+**Returns:** Nothing
+
+**Example:**
+```lua
+-- Alert another room
+echo_at(1234, "A messenger bird arrives with urgent news!")
+say("I've sent word to the other location.")
+```
+
+## Conversation Helper Functions
+
+### show_options(options_table)
+
+Display numbered conversation options to the player.
+
+**Arguments:**
+- `options_table` (table): Lua table containing option strings
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local options = {
+        "Tell me about the ancient prophecy",
+        "What quests do you have available?",
+        "I'd like to buy something",
+        "Goodbye"
+    }
+
+    show_options(options)
+    -- Player will see:
+    -- The sage shows you the following options:
+    --   1. Tell me about the ancient prophecy
+    --   2. What quests do you have available?
+    --   3. I'd like to buy something
+    --   4. Goodbye
+    -- Please say the number of your choice.
+end
+```
+
+### show_speech_options()
+
+Show the mob's available speech options (integrates with existing talk system).
+
+**Arguments:** None
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    say("What would you like to discuss?")
+    show_speech_options()
+end
+```
+
+### wait_for_response(timeout_seconds)
+
+Wait for player input (placeholder function for future development).
+
+**Arguments:**
+- `timeout_seconds` (number, optional): Timeout in seconds (default: 30)
+
+**Returns:**
+- `string`: Player's response (placeholder implementation)
+
+**Example:**
+```lua
+-- Note: This is a placeholder function
+local actor = get_actor()
+if actor then
+    say("What is your name?")
+    local response = wait_for_response(10)
+    say("Nice to meet you, " .. response .. "!")
+end
+```
+
+### get_last_input()
+
+Get the last thing the player said or typed (placeholder function).
+
+**Arguments:** None
+
+**Returns:**
+- `string`: Last input (placeholder implementation)
+
+**Example:**
+```lua
+-- Note: This is a placeholder function
+local input = get_last_input()
+if input then
+    say("You said: " .. input)
+end
+```

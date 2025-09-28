@@ -1,0 +1,152 @@
+# Movement and Transfer Functions
+
+## transfer(character, room_vnum)
+
+Transfer a character to another room.
+
+**Arguments:**
+- `character` (character): The character to transfer
+- `room_vnum` (number): Virtual number of the destination room
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and get_level(actor) >= 20 then
+    say("You're worthy of the secret chamber!")
+    transfer(actor, 9999)
+else
+    say("You're not ready for that place yet.")
+end
+```
+
+## get_room(character)
+
+Get a character's current room vnum.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `number`: Room vnum (0 if invalid)
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local room = get_room(actor)
+    log_message("Player is in room " .. room)
+end
+```
+
+## goto_room(room_vnum)
+
+Move the mob to another room.
+
+**Arguments:**
+- `room_vnum` (number): Virtual number of the destination room
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+say("I must check on something. I'll be right back!")
+wait(1)
+if goto_room(1234) then
+    wait(5)
+    goto_room(get_room(get_actor())) -- Return to original room
+    say("I'm back!")
+end
+```
+
+## at_room(room_vnum, command)
+
+Execute a command at a specific room temporarily.
+
+**Arguments:**
+- `room_vnum` (number): Virtual number of the room to execute at
+- `command` (string): Command to execute
+
+**Returns:**
+- `boolean`: `true` if successful, `false` if failed
+
+**Example:**
+```lua
+-- Check what's happening in another room
+at_room(1234, "say Someone asks about you!")
+wait(1)
+say("I've delivered your message.")
+```
+
+## Room and Character Enumeration Functions
+
+### get_room_characters([room_vnum])
+
+Get all characters (players and NPCs) in a room.
+
+**Arguments:**
+- `room_vnum` (number, optional): Room to check (default: current room)
+
+**Returns:**
+- `table`: Array of character references
+
+**Example:**
+```lua
+-- Get all characters in current room
+local characters = get_room_characters()
+for i, char in ipairs(characters) do
+    if is_pc(char) then
+        say("Hello, " .. get_name(char) .. "!")
+    end
+end
+
+-- Get characters in specific room
+local remote_chars = get_room_characters(1234)
+say("There are " .. #remote_chars .. " characters in room 1234.")
+```
+
+### get_room_players([room_vnum])
+
+Get all player characters in a room (excludes NPCs).
+
+**Arguments:**
+- `room_vnum` (number, optional): Room to check (default: current room)
+
+**Returns:**
+- `table`: Array of player character references
+
+**Example:**
+```lua
+local players = get_room_players()
+if #players == 0 then
+    say("No players here... how lonely.")
+elseif #players == 1 then
+    tell(players[1], "You're the only player here!")
+else
+    say("I see " .. #players .. " adventurers have gathered!")
+end
+```
+
+### get_room_npcs([room_vnum])
+
+Get all NPCs in a room (excludes players).
+
+**Arguments:**
+- `room_vnum` (number, optional): Room to check (default: current room)
+
+**Returns:**
+- `table`: Array of NPC references
+
+**Example:**
+```lua
+local npcs = get_room_npcs()
+for i, npc in ipairs(npcs) do
+    local mob_context = get_mob_context()
+    if npc ~= mob_context then
+        tell(npc, "Fellow NPC, unite against the players!")
+    end
+end
+```

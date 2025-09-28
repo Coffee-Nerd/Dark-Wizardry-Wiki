@@ -1,0 +1,77 @@
+# DarkWizardry Lua MOBprog System
+
+**Version:** 2024.1
+**Author:** DarkWizardry Development Team
+**Date:** September 2025
+
+## Introduction
+
+The DarkWizardry Lua MOBprog system provides a powerful, crash-safe alternative to traditional MOBprogs. Built on LuaJIT for performance, it offers full coroutine-based wait support, comprehensive error handling, and 100% backwards compatibility with existing triggers.
+
+### Key Advantages
+
+- **Wait commands work inside if/else/loop statements** - The holy grail of MOBprog development!
+- **Complete crash prevention** - Sandboxed execution with instruction limits
+- **Full compatibility** - Works with all existing mobprog triggers
+- **Modern Lua syntax** - Clean, readable code with proper variable scoping
+- **Comprehensive API** - All traditional mobprog functions plus new conveniences
+
+## Getting Started
+
+### Basic Script Structure
+
+```lua
+-- Get context variables (equivalent to $n, $i, $o, $t, $r)
+local actor = get_actor()    -- The triggering character ($n)
+local mob = get_mob_context() -- The mob itself ($i)
+local obj = get_object()     -- Object in context ($o)
+local victim = get_victim()  -- Target/victim ($t)
+local random = get_random()  -- Random player in room ($r)
+
+-- Basic example
+if actor and get_level(actor) < 10 then
+    say("Welcome, young adventurer!")
+    wait(2)
+    say("I have something special for you.")
+    create_and_give(actor, 1001) -- Give item vnum 1001
+end
+```
+
+### Mob Setup
+
+1. Create your mob in the area file
+2. Add the trigger type (e.g., `P 100` for greet_prog)
+3. Add the Lua script instead of traditional mobprog syntax
+
+```
+#MOB
+Vnum        1001
+Keywords    wise sage~
+Short       a wise sage~
+Long        A wise sage sits here, studying ancient texts.
+Description A wise sage with long white robes and knowing eyes. He seems willing to help travelers with advice and perhaps some small gifts.
+Race        human~
+Level       50
+Alignment   0
+Hitroll     0
+Sex         1
+Act         stay_area~
+>greet_prog 100~
+local actor = get_actor()
+if actor and is_pc(actor) then
+    wait(1)
+    say("Greetings, " .. get_name(actor) .. ".")
+    if get_level(actor) < 10 then
+        say("You look like you could use some assistance.")
+        create_and_give(actor, 1002) -- Newbie potion
+    end
+end
+~
+```
+
+## Navigation
+
+Continue to:
+- [Core Concepts](/builders/lua-mobprogs/core-concepts) - Variable types and error handling
+- [Communication Functions](/builders/lua-mobprogs/communication) - say, tell, emo functions
+- [All Functions Reference](/builders/lua-mobprogs/reference) - Complete function list

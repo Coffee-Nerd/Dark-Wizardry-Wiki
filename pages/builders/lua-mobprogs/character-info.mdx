@@ -1,0 +1,518 @@
+# Character Information Functions
+
+## get_level(character)
+
+Get a character's level.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `number`: Character's level (0 if invalid)
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local level = get_level(actor)
+    if level < 10 then
+        say("You're still quite young, adventurer.")
+    elseif level < 30 then
+        say("You're growing in strength!")
+    else
+        say("You're a seasoned warrior!")
+    end
+end
+```
+
+## get_name(character)
+
+Get a character's name.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `string`: Character's name (empty string if invalid)
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local name = get_name(actor)
+    say("Welcome, " .. name .. "!")
+end
+```
+
+## get_hp_percent(character)
+
+Get a character's current HP as a percentage.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `number`: HP percentage (0-100)
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local hp = get_hp_percent(actor)
+    if hp < 25 then
+        say("You look badly wounded! Here, take this.")
+        heal(actor, 100)
+    end
+end
+```
+
+## is_pc(character)
+
+Check if a character is a player character (not NPC).
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `boolean`: `true` if player character, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and is_pc(actor) then
+    say("Ah, a fellow adventurer!")
+else
+    say("Another traveler passes by.")
+end
+```
+
+## is_immortal(character)
+
+Check if a character is an immortal.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `boolean`: `true` if immortal, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and is_immortal(actor) then
+    say("Greetings, mighty one!")
+    emo("The sage bows deeply.")
+end
+```
+
+## can_see(char1, char2)
+
+Check if char1 can see char2.
+
+**Arguments:**
+- `char1` (character): The observer
+- `char2` (character): The target
+
+**Returns:**
+- `boolean`: `true` if char1 can see char2, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+local mob = get_mob_context()
+if actor and mob and can_see(mob, actor) then
+    say("I can see you clearly.")
+else
+    say("Who goes there? I sense a presence...")
+end
+```
+
+## is_fighting(character)
+
+Check if a character is currently fighting.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `boolean`: `true` if fighting, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and is_fighting(actor) then
+    say("I won't help you while you're in combat!")
+else
+    say("How can I assist you?")
+end
+```
+
+## is_sleeping(character)
+
+Check if a character is sleeping.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `boolean`: `true` if sleeping, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and is_sleeping(actor) then
+    emo("The sage speaks softly so as not to wake anyone.")
+end
+```
+
+## Character State and Alignment Functions
+
+### is_npc(character)
+
+Check if a character is an NPC.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `boolean`: `true` if NPC, `false` if player or invalid
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    if is_npc(actor) then
+        say("Another NPC approaches.")
+    else
+        say("A player character approaches.")
+    end
+end
+```
+
+### is_good(character)
+
+Check if a character is good aligned (alignment > 350).
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `boolean`: `true` if good aligned, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    if is_good(actor) then
+        say("I sense goodness in your heart.")
+        -- Give good-aligned reward
+    end
+end
+```
+
+### is_neutral(character)
+
+Check if a character is neutral aligned (alignment -350 to 350).
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `boolean`: `true` if neutral aligned, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    if is_neutral(actor) then
+        say("You walk the path of balance.")
+    end
+end
+```
+
+### is_evil(character)
+
+Check if a character is evil aligned (alignment < -350).
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `boolean`: `true` if evil aligned, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    if is_evil(actor) then
+        say("I sense darkness in your soul!")
+        attack(actor)
+    end
+end
+```
+
+### is_charmed(character)
+
+Check if a character is charmed.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `boolean`: `true` if charmed, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and is_charmed(actor) then
+    say("I can see you're under someone's influence.")
+end
+```
+
+### is_affected(character, affect)
+
+Check if a character has a specific affect/spell.
+
+**Arguments:**
+- `character` (character): The character to check
+- `affect` (number): The affect flag to check for
+
+**Common Affect Flags:**
+- `1`: AFF_BLIND
+- `2`: AFF_INVISIBLE
+- `4`: AFF_DETECT_EVIL
+- `8`: AFF_DETECT_INVIS
+- `16`: AFF_DETECT_MAGIC
+- `32`: AFF_DETECT_HIDDEN
+- `64`: AFF_HOLD
+- `128`: AFF_SANCTUARY
+- `256`: AFF_FAERIE_FIRE
+- `512`: AFF_INFRARED
+- `1024`: AFF_CURSE
+- `2048`: AFF_FLAMING
+- `4096`: AFF_POISON
+- `8192`: AFF_PROTECT
+- `16384`: AFF_PARALYSIS
+- `32768`: AFF_SNEAK
+- `65536`: AFF_HIDE
+- `131072`: AFF_SLEEP
+- `262144`: AFF_CHARM
+
+**Returns:**
+- `boolean`: `true` if character has the affect, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    if is_affected(actor, 128) then -- AFF_SANCTUARY
+        say("I see you're protected by sanctuary.")
+    end
+
+    if is_affected(actor, 4096) then -- AFF_POISON
+        say("You're poisoned! Let me help.")
+        heal(actor, 50) -- This won't cure poison, just heal
+    end
+end
+```
+
+### get_align(character)
+
+Get a character's exact alignment value.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `number`: Alignment value (-1000 to 1000, 0 if invalid)
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local align = get_align(actor)
+    if align > 500 then
+        say("You radiate with goodness!")
+    elseif align < -500 then
+        say("Darkness surrounds you...")
+    else
+        say("You seem balanced in your nature.")
+    end
+end
+```
+
+### get_position(character)
+
+Get a character's current position.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `number`: Position value (see positions below)
+
+**Position Values:**
+- `0`: POS_DEAD
+- `1`: POS_MORTAL
+- `2`: POS_INCAP
+- `3`: POS_STUNNED
+- `4`: POS_SLEEPING
+- `5`: POS_RESTING
+- `6`: POS_SITTING
+- `7`: POS_FIGHTING
+- `8`: POS_STANDING
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local pos = get_position(actor)
+    if pos == 4 then -- POS_SLEEPING
+        say("Wake up, sleepyhead!")
+    elseif pos == 5 then -- POS_RESTING
+        say("Rest well, weary traveler.")
+    end
+end
+```
+
+### get_sex(character)
+
+Get a character's gender.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `number`: Gender value (0=neutral, 1=male, 2=female)
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local sex = get_sex(actor)
+    if sex == 1 then
+        say("Welcome, good sir!")
+    elseif sex == 2 then
+        say("Welcome, my lady!")
+    else
+        say("Welcome, traveler!")
+    end
+end
+```
+
+### get_race(character)
+
+Get a character's race name.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `string`: Race name (e.g., "human", "elf", "dwarf")
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local race = get_race(actor)
+    if race == "elf" then
+        say("Greetings, child of the forest!")
+    elseif race == "dwarf" then
+        say("Welcome, stout friend!")
+    elseif race == "human" then
+        say("Ah, a fellow human!")
+    else
+        say("Welcome, " .. race .. "!")
+    end
+end
+```
+
+### get_class(character)
+
+Get a character's class name.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `string`: Class name (e.g., "warrior", "mage", "thief") or "none" for NPCs
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor and not is_npc(actor) then
+    local class = get_class(actor)
+    if class == "mage" then
+        say("I sense great magical potential in you!")
+    elseif class == "warrior" then
+        say("A mighty warrior stands before me!")
+    elseif class == "thief" then
+        say("Keep your hands where I can see them!")
+    end
+end
+```
+
+### get_gold(character)
+
+Get a character's gold amount.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `number`: Amount of gold (0 if invalid)
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local gold = get_gold(actor)
+    if gold >= 1000 then
+        say("You're quite wealthy!")
+    elseif gold >= 100 then
+        say("You have a decent amount of coin.")
+    else
+        say("You don't have much gold, do you?")
+    end
+end
+```
+
+### get_vnum(character)
+
+Get a mob's virtual number (NPCs only).
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `number`: Virtual number (0 if not NPC or invalid)
+
+**Example:**
+```lua
+local mob = get_mob_context()
+if mob then
+    local vnum = get_vnum(mob)
+    log_message("Mob " .. vnum .. " is executing script")
+end
+```
+
+## get_fighting(character)
+
+Get who a character is currently fighting.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `character`: The character they're fighting, or `nil` if not fighting
+
+**Example:**
+```lua
+local actor = get_actor()
+if actor then
+    local enemy = get_fighting(actor)
+    if enemy then
+        tell(actor, "You're fighting " .. get_name(enemy) .. "!")
+    end
+end
+```

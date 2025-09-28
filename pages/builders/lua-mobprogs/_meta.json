@@ -1,0 +1,35 @@
+{
+  "index": {
+    "title": "Introduction & Getting Started"
+  },
+  "core-concepts": {
+    "title": "Core Concepts & Wait Functions"
+  },
+  "communication": {
+    "title": "Communication Functions"
+  },
+  "character-info": {
+    "title": "Character Information"
+  },
+  "combat": {
+    "title": "Combat Functions"
+  },
+  "objects": {
+    "title": "Object Manipulation"
+  },
+  "movement": {
+    "title": "Movement & Transfer"
+  },
+  "quests": {
+    "title": "Quest System"
+  },
+  "utilities": {
+    "title": "Utility Functions"
+  },
+  "tactical": {
+    "title": "Tactical Targeting"
+  },
+  "examples": {
+    "title": "Examples & Best Practices"
+  }
+}

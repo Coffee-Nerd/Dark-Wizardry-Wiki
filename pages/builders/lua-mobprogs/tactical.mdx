@@ -1,0 +1,331 @@
+# Tactical Targeting Functions
+
+## get_tank(group_leader)
+
+Find the character who is currently tanking (taking hits from enemies).
+
+**Arguments:**
+- `group_leader` (character): Any member of the group to analyze
+
+**Returns:**
+- `character`: The character who is being targeted by the most enemies, or `nil` if no tank found
+
+**Tank Detection Logic:**
+1. **PRIMARY**: Who is being attacked by enemies (same logic as rescue command)
+2. **SECONDARY**: Warrior class preference
+3. **TERTIARY**: High HP percentage
+4. **QUATERNARY**: Better AC (armor class)
+
+**Example:**
+```lua
+local actor = get_actor()
+local tank = get_tank(actor)
+if tank then
+    say("I see " .. get_name(tank) .. " is bravely taking the hits!")
+    -- Attack someone else since tank is busy
+    local non_tank = get_non_tank(actor)
+    if non_tank then
+        attack(non_tank)
+    end
+end
+```
+
+## get_non_tank(group_leader)
+
+Find the best non-tank target in a group (prioritizes healers > casters > weakest).
+
+**Arguments:**
+- `group_leader` (character): Any member of the group to analyze
+
+**Returns:**
+- `character`: Best non-tank target, or `nil` if only tank available
+
+**Targeting Priority:**
+1. **Healers** (Clerics) - highest threat
+2. **Spellcasters** (Mages, Psionics) - medium threat
+3. **Weakest character** - easiest to kill
+
+**Example:**
+```lua
+local actor = get_actor()
+local target = get_non_tank(actor)
+if target then
+    say("You're not hiding behind your tank, " .. get_name(target) .. "!")
+    damage(target, 400, "Sneaky attack!", 0)
+else
+    say("I'll have to face the tank directly...")
+    local tank = get_tank(actor)
+    if tank then
+        attack(tank)
+    end
+end
+```
+
+## get_healer(group_leader)
+
+Find the primary healer in a group (targets Clerics first).
+
+**Arguments:**
+- `group_leader` (character): Any member of the group to analyze
+
+**Returns:**
+- `character`: The cleric in the group, or `nil` if no healer found
+
+**Example:**
+```lua
+local actor = get_actor()
+local healer = get_healer(actor)
+if healer then
+    say("The healer must be silenced!")
+    damage(healer, 500, "No more healing for your friends!", 11) -- holy damage
+    echo_around(healer, get_name(healer) .. " staggers under the anti-healing curse!")
+else
+    say("No healers to worry about...")
+end
+```
+
+## get_spellcaster(group_leader)
+
+Find the primary spellcaster in a group.
+
+**Arguments:**
+- `group_leader` (character): Any member of the group to analyze
+
+**Returns:**
+- `character`: The best spellcaster target, or `nil` if no casters found
+
+**Priority Order:**
+1. **Mage** (highest spell damage)
+2. **Cleric** (divine magic)
+3. **Psionic** (mental magic)
+
+**Example:**
+```lua
+local actor = get_actor()
+local caster = get_spellcaster(actor)
+if caster then
+    local class = get_class_name(caster)
+    say("Magic will not save you, " .. class .. "!")
+    damage(caster, 350, "Your spells are useless here!", 1) -- lightning damage
+end
+```
+
+## get_weakest(group_leader)
+
+Find the character with the lowest HP percentage.
+
+**Arguments:**
+- `group_leader` (character): Any member of the group to analyze
+
+**Returns:**
+- `character`: Character with lowest HP%, or `nil` if no valid targets
+
+**Example:**
+```lua
+local actor = get_actor()
+local weak = get_weakest(actor)
+if weak then
+    local hp = get_hp_percent(weak)
+    say("You're looking weak, " .. get_name(weak) .. "! Only " .. hp .. "% health left!")
+    damage(weak, 250, "Finish the wounded!", 0)
+else
+    say("Everyone looks healthy... for now.")
+end
+```
+
+## get_strongest(group_leader)
+
+Find the character with the highest HP percentage.
+
+**Arguments:**
+- `group_leader` (character): Any member of the group to analyze
+
+**Returns:**
+- `character`: Character with highest HP%, or `nil` if no valid targets
+
+**Example:**
+```lua
+local actor = get_actor()
+local strong = get_strongest(actor)
+if strong then
+    say("You look too healthy, " .. get_name(strong) .. "!")
+    damage(strong, 300, "Let's fix that health of yours!", 0)
+end
+```
+
+## get_class_name(character)
+
+Get the class name of a character as a string.
+
+**Arguments:**
+- `character` (character): The character to check
+
+**Returns:**
+- `string`: Class name ("mage", "cleric", "thief", "warrior", "psionic") or "unknown"
+
+**Example:**
+```lua
+local actor = get_actor()
+local class = get_class_name(actor)
+say("Ah, a " .. class .. "! I know how to deal with your kind!")
+
+if class == "mage" then
+    say("Your magic is weak against my defenses!")
+elseif class == "warrior" then
+    say("Brute force won't work here!")
+elseif class == "cleric" then
+    say("Your god cannot protect you!")
+end
+```
+
+## is_class(character, class_name)
+
+Check if a character is a specific class.
+
+**Arguments:**
+- `character` (character): The character to check
+- `class_name` (string): Class to check for ("mage", "cleric", "thief", "warrior", "psionic")
+
+**Returns:**
+- `boolean`: `true` if character is that class, `false` otherwise
+
+**Example:**
+```lua
+local actor = get_actor()
+if is_class(actor, "mage") then
+    say("I can smell the arcane magic on you, wizard!")
+    damage(actor, 400, "Anti-magic burst!", 11) -- holy damage counters magic
+elseif is_class(actor, "warrior") then
+    say("A warrior! This will be a proper fight!")
+    -- Different tactics for warriors
+end
+```
+
+## damage_group_target(group_leader, target_type, amount, message [, elemental])
+
+Convenient function to damage a specific type of target in one call.
+
+**Arguments:**
+- `group_leader` (character): Any member of the group to target
+- `target_type` (string): Type of target ("tank", "healer", "caster", "weakest", "strongest", "non_tank")
+- `amount` (number): Damage amount
+- `message` (string): Damage message
+- `elemental` (number, optional): Elemental damage type (0-18, default 0)
+
+**Returns:**
+- `boolean`: `true` if target found and damaged, `false` if no target found
+
+**Example:**
+```lua
+local actor = get_actor()
+
+-- Try to kill healer first
+if damage_group_target(actor, "healer", 600, "The healer dies first!", 18) then
+    say("Healer eliminated!")
+elseif damage_group_target(actor, "caster", 500, "No more spells!", 1) then
+    say("Spellcaster silenced!")
+elseif damage_group_target(actor, "weakest", 400, "Easy prey!", 0) then
+    say("Picked off the weak one!")
+else
+    -- Fight the tank
+    damage_group_target(actor, "tank", 300, "Face me, warrior!", 0)
+    say("Tank vs tank!")
+end
+```
+
+## get_role_priority_targets(group_leader)
+
+Get an ordered table of targets by tactical priority.
+
+**Arguments:**
+- `group_leader` (character): Any member of the group to analyze
+
+**Returns:**
+- `table`: Array of characters ordered by priority [healer, caster, weakest, tank]
+
+**Example:**
+```lua
+local actor = get_actor()
+local targets = get_role_priority_targets(actor)
+
+say("Analyzing threats...")
+for i, target in ipairs(targets) do
+    if target then
+        local class = get_class_name(target)
+        local hp = get_hp_percent(target)
+
+        if i == 1 then
+            say("Primary threat: " .. get_name(target) .. " the " .. class .. " (" .. hp .. "% HP)")
+            damage(target, 500, "You're the biggest threat!", 0)
+            break
+        end
+    end
+end
+```
+
+## Advanced Combat Examples
+
+### Smart Dragon AI:
+```lua
+-- Phase-based dragon combat
+local actor = get_actor()
+if actor then
+    -- Phase 1: Eliminate support
+    local healer = get_healer(actor)
+    if healer then
+        say("The light of healing shall be extinguished!")
+        damage(healer, 700, "Dragon fire incinerates the healer!", 18)
+        echo_around(healer, "The dragon's flames focus on " .. get_name(healer) .. "!")
+        return
+    end
+
+    -- Phase 2: Counter magic users
+    local caster = get_spellcaster(actor)
+    if caster then
+        say("Your pitiful magic is nothing compared to dragon fire!")
+        damage(caster, 600, "Arcane energies are consumed by flame!", 18)
+        return
+    end
+
+    -- Phase 3: Pick off the weak
+    local weakest = get_weakest(actor)
+    if weakest and get_hp_percent(weakest) < 50 then
+        say("The wounded shall perish first!")
+        damage(weakest, 500, "Dragon claws finish the job!", 0)
+        return
+    end
+
+    -- Phase 4: Face the tank
+    local tank = get_tank(actor)
+    if tank then
+        say("At last, a worthy opponent!")
+        damage(tank, 400, "Claw meets sword in epic combat!", 0)
+    end
+end
+```
+
+### Tactical Group Encounter:
+```lua
+-- Smart mob that adapts based on group composition
+local actor = get_actor()
+local room_players = get_room_players()
+
+if #room_players == 1 then
+    say("One against one? How boring.")
+    damage(room_players[1], 300, "Single combat!", 0)
+elseif #room_players <= 3 then
+    say("A small group... I'll pick you off one by one!")
+    -- Focus fire strategy
+    if damage_group_target(actor, "healer", 500, "No healing!", 11) then
+        say("Healer down!")
+    elseif damage_group_target(actor, "weakest", 400, "Easy target!", 0) then
+        say("One falls!")
+    end
+else
+    say("So many heroes... time for area damage!")
+    damage_room(250, "Area blast hits everyone!", 18, "enemies")
+    wait(1)
+    -- Then focus on priority targets
+    damage_group_target(actor, "healer", 400, "Still targeting the healer!", 18)
+end
+```
