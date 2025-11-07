@@ -181,7 +181,7 @@ end
 **Smart Healing Example:**
 ```lua
 -- Heal all group members who are injured
-local mob = get_mob_context()
+local mob = get_mob()
 local characters = get_room_characters()
 
 say("Let me tend to the wounded...")
@@ -197,7 +197,7 @@ end
 **Selective Targeting Example:**
 ```lua
 -- Only attack enemies, spare innocents
-local mob = get_mob_context()
+local mob = get_mob()
 local room_chars = get_room_characters()
 local enemies_found = false
 
